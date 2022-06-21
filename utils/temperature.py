@@ -1,19 +1,20 @@
 # standard lib
-from enum import Enum, unique
+from enum import unique
 
 # third-party
 from attrs import define, field, validators
 
 # mine
-from .base import BaseEnum
+from .base import BaseEnumTemperature
 from .errors import UnitsError
 
 @unique
-class TemperatureUnit(BaseEnum):
-    DEG_F = 'F'
-    DEG_C = 'C'
-    DEG_R = 'R'
-    DEG_K = 'K'
+class TemperatureUnit(BaseEnumTemperature):
+    # (symbol, absolute_zero)
+    DEG_F = ('F', -459.67)
+    DEG_C = ('C', -273.15)
+    DEG_R = ('R', 0)
+    DEG_K = ('K', 0)
 
 @define
 class Temperature:
