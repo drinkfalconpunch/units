@@ -5,10 +5,11 @@ from enum import Enum, unique
 from attrs import define, field, validators
 
 # mine
+from .base import BaseEnum
 from .errors import UnitsError
 
 @unique
-class TemperatureUnit(Enum):
+class TemperatureUnit(BaseEnum):
     DEG_F = 'F'
     DEG_C = 'C'
     DEG_R = 'R'
