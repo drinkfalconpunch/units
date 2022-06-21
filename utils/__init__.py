@@ -1,1 +1,1 @@
-from temperature import temperature_converter
+from .temperature import Temperature, TemperatureUnit
