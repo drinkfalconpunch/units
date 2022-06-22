@@ -16,10 +16,26 @@ class TemperatureUnit(BaseEnumTemperature):
     DEG_R = ('R', 0)
     DEG_K = ('K', 0)
 
+    @property
+    def unit_string(self):
+        return self.value[0]
+
+    @property
+    def absolute_zero(self):
+        return self.value[1]
+
 @define
 class Temperature:
     value: float = field()
     unit: TemperatureUnit = field(validator=validators.instance_of(TemperatureUnit))
+
+    @property
+    def unit_string(self):
+        return self.unit.unit_string
+
+    @property
+    def absolute_zero(self):
+        return self.unit.absolute_zero
 
     def change_units(self, to_unit: TemperatureUnit) -> float:
         # Change the value and units of the temperature
@@ -63,7 +79,6 @@ class Temperature:
                 return Temperature.temperature_K_to_C(temperature)
             elif to_unit == TemperatureUnit.DEG_R:
                 return Temperature.temperature_K_to_R(temperature)
-
 
     ## Fahrenheit to X converters
     @staticmethod

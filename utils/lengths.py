@@ -1,25 +1,47 @@
-# We need converters for oil-field units. Better yet, input the units in the model (json, dict, or whatever) then let it convert everything for you.
+from enum import Enum, auto
 
-from enum import Enum
-
-class LabUnit(Enum):
-    pass
-
-class MetricUnit(Enum):
-    KM = 'km'
-    M = 'm'
-    NM = 'nm'
-    MM = 'mm'
-    CM = 'cm'
+from attrs import define, field, validators
 
 class LengthUnit(Enum):
-    MILE = 'mi'
-    FOOT = 'ft'
-    INCH = 'in'
-    YARD = 'yd'
+    MILE = auto()
+    FOOT = auto()
+    INCH = auto()
+    YARD = auto()
+    KM = auto()
+    M = auto()
+    NM = auto()
+    MICRON = auto()
+    MM = auto()
+    CM = auto()
 
-    def convert_unit(self, from_unit: Any):
+unit_mile = {
+    'enum': LengthUnit.MILE,
+    'string': ['mi', 'mile', 'miles'],
+    'conversions': {
+        LengthUnit.YARD: 1760,
+        LengthUnit.FOOT: 5280,
+        LengthUnit.INCH: 63360,
+        LengthUnit.KM: 1.609344,
+        LengthUnit.M: 1609.344,
+        LengthUnit.CM: 160934.4,
+        LengthUnit.MM: 1609344,
+        LengthUnit.MICRON: 1609344000,
+        LengthUnit.NM: 1609344000000,
+    }
+}
+
+@define
+class Length:
+    value: float = field()
+    unit: LengthUnit = field(validator=validators.instance_of(LengthUnit))
+
+    @property
+    def unit_string(self):
+        return self.unit # FIX
+
+    def convert_unit(self, from_unit: LengthUnit):
         pass
+
 
 # in, ft, yd, mi
 conversion_table = [[1,     0.08333333, 0.02777778, 0.00001578],
@@ -63,4 +85,4 @@ def feet_to_miles(feet: float) -> float:
 def miles_to_feet(miles: float) -> float:
     return miles * 5280
 
-def feet_to
+# def feet_to
