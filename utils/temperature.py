@@ -1,28 +1,30 @@
 # standard lib
-from enum import unique
+from collections import namedtuple
+from enum import Enum, unique
 
 # third-party
 from attrs import define, field, validators
 
 # mine
-from .base import BaseEnumTemperature
 from .errors import UnitsError
 
+TemperatureScale = namedtuple('TemperatureScale', 'symbol absolute_zero')
+
 @unique
-class TemperatureUnit(BaseEnumTemperature):
-    # (symbol, absolute_zero)
-    DEG_F = ('F', -459.67)
-    DEG_C = ('C', -273.15)
-    DEG_R = ('R', 0)
-    DEG_K = ('K', 0)
+class TemperatureUnit(Enum):
+    DEG_F = TemperatureScale('F', -459.67)
+    DEG_C = TemperatureScale('C', -273.15)
+    DEG_R = TemperatureScale('R', 0)
+    DEG_K = TemperatureScale('K', 0)
 
     @property
-    def unit_string(self):
-        return self.value[0]
+    def symbol(self) -> str:
+        return self.value.symbol
 
     @property
-    def absolute_zero(self):
-        return self.value[1]
+    def absolute_zero(self) -> float:
+        return self.value.absolute_zero
+
 
 @define
 class Temperature:
@@ -30,14 +32,14 @@ class Temperature:
     unit: TemperatureUnit = field(validator=validators.instance_of(TemperatureUnit))
 
     @property
-    def unit_string(self):
-        return self.unit.unit_string
+    def symbol(self) -> str:
+        return self.unit.symbol
 
     @property
-    def absolute_zero(self):
+    def absolute_zero(self) -> float:
         return self.unit.absolute_zero
 
-    def change_units(self, to_unit: TemperatureUnit) -> float:
+    def change_units(self, to_unit: TemperatureUnit) -> None:
         # Change the value and units of the temperature
         self.value = Temperature.temperature_converter(self.value, self.unit, to_unit)
         self.unit = to_unit

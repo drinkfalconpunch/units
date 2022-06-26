@@ -130,3 +130,7 @@ dmypy.json
 
 *.ipynb
 **.vscode/
+**.idea/
+
+Pipfile
+Pipfile.lock
