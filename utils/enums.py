@@ -9,21 +9,18 @@ TemperatureScale = namedtuple('TemperatureScale', ['symbol', 'absolute_zero'])
 
 class TemperatureUnitMeta(EnumMeta):
     def __getitem__(cls, unit_str: str) -> TemperatureUnit:
-        try:
-            return super.__getitem__(unit_str)
-        except (KeyError, TypeError):
-            print(unit_str)
-            if not isinstance(unit_str, str):
-                raise ValueError(f"Temperature unit must be string: {unit_str}.")
-            print("units")
-            units = [u for u in TemperatureUnit]
-            for unit in units:
-                if unit.symbol == unit_str.upper():
-                    return unit
-            raise ValueError(f"Invalid temperature unit: {unit_str}.")
+        # print("unit_str")
+        if not isinstance(unit_str, str):
+            raise ValueError(f"Temperature unit must be string: {unit_str}.")
+        # print("units")
+        units = [u for u in TemperatureUnit]
+        for unit in units:
+            if unit.symbol == unit_str.upper():
+                return unit
+        raise ValueError(f"Invalid temperature unit: {unit_str}.")
 
 @unique
-class TemperatureUnit(Enum):
+class TemperatureUnit(Enum): #, metaclass=TemperatureUnitMeta):
     DEG_F = TemperatureScale('F', -459.67)
     DEG_C = TemperatureScale('C', -273.15)
     DEG_R = TemperatureScale('R', 0)

@@ -5,7 +5,7 @@ from collections import namedtuple
 from attrs import define, field, validators
 
 # mine
-from .errors import UnitsError
+from .errors import TemperatureError
 from .enums import TemperatureUnit
 
 
@@ -17,7 +17,7 @@ class Temperature:
     @unit.validator
     def _check_unit(self, attribute, value):
         if value not in TemperatureUnit:
-            raise UnitsError(f"{value} is not a valid temperature unit")
+            raise TemperatureError.invalid_unit(value)
 
     @property
     def symbol(self) -> str:
@@ -33,16 +33,20 @@ class Temperature:
         self.unit = to_unit
 
     @staticmethod
+    def is_valid_temperature(temperature: float, unit: TemperatureUnit) -> bool:
+        return temperature >= unit.absolute_zero
+
+    @staticmethod
     def temperature_converter(temperature: float, from_unit: TemperatureUnit, to_unit: TemperatureUnit) -> float:
         # Convert temperature from one unit to another
-        if isinstance(from_unit, str):
-            from_unit = TemperatureUnit[from_unit]
-        if isinstance(to_unit, str):
-            to_unit = TemperatureUnit[to_unit]
+        # if isinstance(from_unit, str):
+        #     from_unit = TemperatureUnit[from_unit]
+        # if isinstance(to_unit, str):
+        #     to_unit = TemperatureUnit[to_unit]
         if from_unit not in TemperatureUnit:
-            raise UnitsError(f'Invalid from_unit {from_unit}.')
+            raise TemperatureError.invalid_unit(from_unit)
         if to_unit not in TemperatureUnit:
-            raise UnitsError(f'Invalid to_unit {to_unit}.')
+            raise TemperatureError.invalid_unit(to_unit)
         if from_unit == to_unit:
             return temperature
         if from_unit == TemperatureUnit.DEG_F:
@@ -78,22 +82,22 @@ class Temperature:
     @staticmethod
     def temperature_F_to_C(temperature_F: float) -> float:
         # Convert degrees Fahrenheit to degrees Celsius
-        if temperature_F < TemperatureUnit.DEG_F.absolute_zero:
-            raise ValueError('Invalid temperature. Must be >= -459.67 (F)')
+        if not Temperature.is_valid_temperature(temperature_F, TemperatureUnit.DEG_F):
+            raise TemperatureError.invalid_temperature(temperature_F, TemperatureUnit.DEG_F)
         return (temperature_F - 32) * (5/9)
 
     @staticmethod
     def temperature_F_to_R(temperature_F: float) -> float:
         # Convert degrees Fahrenheit to degrees Rankine
-        if temperature_F < -459.67:
-            raise ValueError('Invalid temperature. Must be >= -459.67 (F)')
+        if not Temperature.is_valid_temperature(temperature_F, TemperatureUnit.DEG_F):
+            raise TemperatureError.invalid_temperature(temperature_F, TemperatureUnit.DEG_F)
         return temperature_F + 459.67
 
     @staticmethod
     def temperature_F_to_K(temperature_F: float) -> float:
         # Convert degrees Fahrenheit to degrees Kelvin
-        if temperature_F < -459.67:
-            raise ValueError('Invalid temperature. Must be >= -459.67 (F)')
+        if not Temperature.is_valid_temperature(temperature_F, TemperatureUnit.DEG_F):
+            raise TemperatureError.invalid_temperature(temperature_F, TemperatureUnit.DEG_F)
         return (temperature_F + 459.67) / 1.8
 
     ## Celcius to X converters
@@ -101,22 +105,22 @@ class Temperature:
     @staticmethod
     def temperature_C_to_F(temperature_C: float) -> float:
         # Convert degrees Celsius to degrees Fahrenheit
-        if temperature_C < -273.15:
-            raise ValueError('Invalid temperature. Must be >= -273.15 (C)')
+        if not Temperature.is_valid_temperature(temperature_C, TemperatureUnit.DEG_C):
+            raise TemperatureError.invalid_temperature(temperature_C, TemperatureUnit.DEG_C)
         return temperature_C * 1.8 + 32
 
     @staticmethod
     def temperature_C_to_K(temperature_C: float) -> float:
         # Convert degrees Celsius to Kelvin
-        if temperature_C < -273.15:
-            raise ValueError('Invalid temperature. Must be >= -273.15 (C)')
+        if not Temperature.is_valid_temperature(temperature_C, TemperatureUnit.DEG_C):
+            raise TemperatureError.invalid_temperature(temperature_C, TemperatureUnit.DEG_C)
         return temperature_C + 273.15
 
     @staticmethod
     def temperature_C_to_R(temperature_C: float) -> float:
         # Convert degrees Celsius to degrees Rankine
-        if temperature_C < -273.15:
-            raise ValueError('Invalid temperature. Must be >= -273.15 (C)')
+        if not Temperature.is_valid_temperature(temperature_C, TemperatureUnit.DEG_C):
+            raise TemperatureError.invalid_temperature(temperature_C, TemperatureUnit.DEG_C)
         return temperature_C * 1.8 + 491.67
 
     ## Rankine to X converters
@@ -124,22 +128,22 @@ class Temperature:
     @staticmethod
     def temperature_R_to_F(temperature_R: float) -> float:
         # Convert degrees Rankine to degrees Fahrenheit
-        if temperature_R < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (R)')
+        if not Temperature.is_valid_temperature(temperature_R, TemperatureUnit.DEG_R):
+            raise TemperatureError.invalid_temperature(temperature_R, TemperatureUnit.DEG_R)
         return temperature_R - 459.67
 
     @staticmethod
     def temperature_R_to_C(temperature_R: float) -> float:
         # Convert degrees Rankine to degrees Celsius
-        if temperature_R < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (R)')
+        if not Temperature.is_valid_temperature(temperature_R, TemperatureUnit.DEG_R):
+            raise TemperatureError.invalid_temperature(temperature_R, TemperatureUnit.DEG_R)
         return temperature_R / 1.8 - 273.15
 
     @staticmethod
     def temperature_R_to_K(temperature_R: float) -> float:
         # Convert degrees Rankine to Kelvin
-        if temperature_R < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (R)')
+        if not Temperature.is_valid_temperature(temperature_R, TemperatureUnit.DEG_R):
+            raise TemperatureError.invalid_temperature(temperature_R, TemperatureUnit.DEG_R)
         return temperature_R / 1.8
 
     ## Kelvin to X converters
@@ -147,20 +151,20 @@ class Temperature:
     @staticmethod
     def temperature_K_to_F(temperature_K: float) -> float:
         # Convert Kelvin to degrees Fahrenheit
-        if temperature_K < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (K)')
+        if not Temperature.is_valid_temperature(temperature_K, TemperatureUnit.DEG_K):
+            raise TemperatureError.invalid_temperature(temperature_K, TemperatureUnit.DEG_K)
         return temperature_K * 1.8 - 459.67
 
     @staticmethod
     def temperature_K_to_C(temperature_K: float) -> float:
         # Convert Kelvin to degrees Celsius
-        if temperature_K < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (K)')
+        if not Temperature.is_valid_temperature(temperature_K, TemperatureUnit.DEG_K):
+            raise TemperatureError.invalid_temperature(temperature_K, TemperatureUnit.DEG_K)
         return temperature_K - 273.15
 
     @staticmethod
     def temperature_K_to_R(temperature_K: float) -> float:
         # Convert Kelvin to degrees Rankine
-        if temperature_K < 0:
-            raise ValueError('Invalid temperature. Must be >= 0 (K)')
+        if not Temperature.is_valid_temperature(temperature_K, TemperatureUnit.DEG_K):
+            raise TemperatureError.invalid_temperature(temperature_K, TemperatureUnit.DEG_K)
         return temperature_K * 1.8
