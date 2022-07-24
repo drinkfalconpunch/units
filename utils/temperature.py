@@ -12,7 +12,12 @@ from .enums import TemperatureUnit
 @define
 class Temperature:
     value: float = field()
-    unit: TemperatureUnit = field(validator=validators.instance_of(TemperatureUnit))
+    unit: TemperatureUnit = field() #validator=validators.instance_of(TemperatureUnit))
+
+    @unit.validator
+    def _check_unit(self, attribute, value):
+        if value not in TemperatureUnit:
+            raise UnitsError(f"{value} is not a valid temperature unit")
 
     @property
     def symbol(self) -> str:
@@ -30,6 +35,10 @@ class Temperature:
     @staticmethod
     def temperature_converter(temperature: float, from_unit: TemperatureUnit, to_unit: TemperatureUnit) -> float:
         # Convert temperature from one unit to another
+        if isinstance(from_unit, str):
+            from_unit = TemperatureUnit[from_unit]
+        if isinstance(to_unit, str):
+            to_unit = TemperatureUnit[to_unit]
         if from_unit not in TemperatureUnit:
             raise UnitsError(f'Invalid from_unit {from_unit}.')
         if to_unit not in TemperatureUnit:

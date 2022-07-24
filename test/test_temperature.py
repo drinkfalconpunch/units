@@ -1,8 +1,9 @@
 from unittest import TestCase
 
-from pytest import approx
+from pytest import approx, raises
 
 from utils.temperature import Temperature
+from utils.errors import UnitsError
 from utils.enums import TemperatureUnit
 
 class TestTemperature(TestCase):
@@ -26,3 +27,10 @@ class TestTemperature(TestCase):
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_C, TemperatureUnit.DEG_C) == 0
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_K, TemperatureUnit.DEG_K) == 0
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_R, TemperatureUnit.DEG_R) == 0
+
+    def test_invalid_unit(self):
+        """
+        Check that an invalid unit raises an error.
+        """
+        with raises(UnitsError):
+            TemperatureUnit['invalid']
