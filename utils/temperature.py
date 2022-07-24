@@ -1,29 +1,12 @@
 # standard lib
 from collections import namedtuple
-from enum import Enum, unique
 
 # third-party
 from attrs import define, field, validators
 
 # mine
 from .errors import UnitsError
-
-TemperatureScale = namedtuple('TemperatureScale', 'symbol absolute_zero')
-
-@unique
-class TemperatureUnit(Enum):
-    DEG_F = TemperatureScale('F', -459.67)
-    DEG_C = TemperatureScale('C', -273.15)
-    DEG_R = TemperatureScale('R', 0)
-    DEG_K = TemperatureScale('K', 0)
-
-    @property
-    def symbol(self) -> str:
-        return self.value.symbol
-
-    @property
-    def absolute_zero(self) -> float:
-        return self.value.absolute_zero
+from .enums import TemperatureUnit
 
 
 @define
@@ -86,7 +69,7 @@ class Temperature:
     @staticmethod
     def temperature_F_to_C(temperature_F: float) -> float:
         # Convert degrees Fahrenheit to degrees Celsius
-        if temperature_F < -459.67:
+        if temperature_F < TemperatureUnit.DEG_F.absolute_zero:
             raise ValueError('Invalid temperature. Must be >= -459.67 (F)')
         return (temperature_F - 32) * (5/9)
 

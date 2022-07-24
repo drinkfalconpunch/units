@@ -14,10 +14,30 @@ class LengthUnit(Enum):
     MM = auto()
     CM = auto()
 
+# Give the engine some unit systems, like mks or fps, and a way to convert one to the other,
+# like feet to meter. Memoize values for future use.
+
 unit_mile = {
     'enum': LengthUnit.MILE,
     'string': ['mi', 'mile', 'miles'],
     'conversions': {
+        LengthUnit.YARD: 1760,
+        LengthUnit.FOOT: 5280,
+        LengthUnit.INCH: 63360,
+        LengthUnit.KM: 1.609344,
+        LengthUnit.M: 1609.344,
+        LengthUnit.CM: 160934.4,
+        LengthUnit.MM: 1609344,
+        LengthUnit.MICRON: 1609344000,
+        LengthUnit.NM: 1609344000000,
+    }
+}
+
+unit_foot = {
+    'enum': LengthUnit.FOOT,
+    'string': ['ft', 'foot', 'feet'],
+    'conversions': {
+        LengthUnit.MILE: 1,
         LengthUnit.YARD: 1760,
         LengthUnit.FOOT: 5280,
         LengthUnit.INCH: 63360,
