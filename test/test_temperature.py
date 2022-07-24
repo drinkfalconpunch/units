@@ -1,19 +1,27 @@
 from unittest import TestCase
 
+from pytest import approx
+
 from utils.temperature import Temperature
 from utils.enums import TemperatureUnit
 
 class TestTemperature(TestCase):
-    def test_temperature_convert(self):
-        pass
+    def test_convert_units_and_inverse(self):
+        """
+        Check that converting to a different unit and back returns the original value.
+        """
+        for unit_a in TemperatureUnit:
+            for unit_b in TemperatureUnit:
+                if unit_a == unit_b:
+                    continue
+                value_a = Temperature.temperature_converter(0, unit_a, unit_b)
+                value_b = Temperature.temperature_converter(value_a, unit_b, unit_a)
+                assert approx(value_b) == 0
 
-    def test_absolute_zeros_equal(self):
-        assert TemperatureUnit.DEG_F.absolute_zero == -459.67
-
-    def test_change_units_and_inverse(self):
-        pass
-
-    def test_same_unit(self):
+    def test_convert_same_unit(self):
+        """
+        Check that converting to the same unit returns the same value.
+        """
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_F, TemperatureUnit.DEG_F) == 0
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_C, TemperatureUnit.DEG_C) == 0
         assert Temperature.temperature_converter(0, TemperatureUnit.DEG_K, TemperatureUnit.DEG_K) == 0
