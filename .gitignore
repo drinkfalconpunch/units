@@ -134,3 +134,5 @@ dmypy.json
 
 Pipfile
 Pipfile.lock
+
+*.ipynb
