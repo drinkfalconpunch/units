@@ -2,9 +2,9 @@ from unittest import TestCase
 
 from pytest import approx, raises
 
-from utils.temperature import Temperature
-from utils.errors import UnitsError
-from utils.enums import TemperatureUnit
+from units.temperature import Temperature
+from units.errors import UnitsError
+from units.enums import TemperatureUnit
 
 class TestTemperature(TestCase):
     def test_convert_units_and_inverse(self):
