@@ -1,39 +1,40 @@
-from __future__ import annotations
-
-from enum import Enum, EnumMeta, unique
+from enum import Enum, unique
 from collections import namedtuple
+from typing import Self
 
 from .errors import UnitsError
 
-TemperatureScale = namedtuple('TemperatureScale', ['symbol', 'absolute_zero'])
-
-class TemperatureUnitMeta(EnumMeta):
-    def __getitem__(cls, unit_str: str) -> TemperatureUnit:
-        # print("unit_str")
-        if not isinstance(unit_str, str):
-            raise ValueError(f"Temperature unit must be string: {unit_str}.")
-        # print("units")
-        units = [u for u in TemperatureUnit]
-        for unit in units:
-            if unit.symbol == unit_str.upper():
-                return unit
-        raise ValueError(f"Invalid temperature unit: {unit_str}.")
+TemperatureScale = namedtuple("TemperatureScale", ["symbol", "absolute_zero"])
 
 @unique
-class TemperatureUnit(Enum): #, metaclass=TemperatureUnitMeta):
-    DEG_F = TemperatureScale('F', -459.67)
-    DEG_C = TemperatureScale('C', -273.15)
-    DEG_R = TemperatureScale('R', 0)
-    DEG_K = TemperatureScale('K', 0)
+class TemperatureUnit(Enum):
+    DEG_F = TemperatureScale("F", -459.67)
+    DEG_C = TemperatureScale("C", -273.15)
+    DEG_R = TemperatureScale("R", 0)
+    DEG_K = TemperatureScale("K", 0)
 
     @property
-    def symbol(cls) -> str:
-        return cls.value.symbol
+    def symbol(self) -> str:
+        return self.value.symbol
 
     @property
-    def absolute_zero(cls) -> float:
-        return cls.value.absolute_zero
+    def absolute_zero(self) -> float:
+        return self.value.absolute_zero
+
+    @classmethod
+    def from_symbol(cls, unit_str: str) -> Self:
+        """Lookup a TemperatureUnit by its symbol."""
+        if not isinstance(unit_str, str):
+            raise ValueError(f"Temperature unit must be a string: {unit_str}.")
+        
+        unit_str = unit_str.upper()
+        for unit in cls:
+            if unit.symbol == unit_str:
+                return unit
+
+        raise ValueError(f"Invalid temperature unit: {unit_str}.")
 
 if __name__ == "__main__":
-    # testing indexing with enums
-    a = TemperatureUnit['C']
+    # Testing
+    a = TemperatureUnit.from_symbol("C")  # Works
+    print(a, a.symbol, a.absolute_zero)
